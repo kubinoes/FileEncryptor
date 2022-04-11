@@ -8,7 +8,7 @@ public class EncryptButton extends Button {
     EncryptButton() {
         setText("Encrypt");
         FileChooser fileChooser = new FileChooser();
-        setOnAction(e ->{
+        setOnAction(e -> {
             File file = fileChooser.showOpenDialog(new Stage());
             String fileName = file.getAbsolutePath();
             EncryptFile.encrypt(fileName);

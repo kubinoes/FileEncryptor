@@ -2,18 +2,26 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import org.bouncycastle.util.encoders.Hex;
 import javax.crypto.spec.IvParameterSpec;
+import java.io.File;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
 public class DecryptFile {
-    byte[] keyBytes = Hex.decode("000102030405060708090a0b0c0d0e0f");
+    static String dir = "/Users/jakub/Desktop";
+    static String storeFileName = dir + "/" + "keystore.bks";
 
     static void decrypt(String pathName) {
         String[] splitPath = pathName.split("\\.");
         String[] splicedArray = Arrays.copyOfRange(splitPath, 0, splitPath.length - 2);
         String testFilePath = String.join(".", splicedArray);
 
-        byte[] keyBytes = Hex.decode("000102030405060708090a0b0c0d0e0f");
+        File file = new File(storeFileName);
+        // TODO message saying that key to decrypt is not available on the machine
+        if (!file.exists()) {
+            return;
+        }
+        SecretKeySpec secretKey = KeyStoreManager.getKey();
+
         try {
             // reading
             String ivString = FileUtil.getIV("AES/CBC/PKCS5Padding", pathName);
@@ -22,8 +30,7 @@ public class DecryptFile {
 
             // decrypting
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
-            SecretKeySpec key = new SecretKeySpec(keyBytes, "AES");
-            cipher.init(Cipher.DECRYPT_MODE, key, iv);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
             byte[] output = cipher.doFinal(input);
 
             // writing
@@ -32,7 +39,7 @@ public class DecryptFile {
             e.printStackTrace();
             System.out.println("exception" + e.toString());
             if (e.toString() == "exceptionjavax.crypto.IllegalBlockSizeException: last block incomplete in decryption") {
-                // file has been corrupted, TODO display a message
+                // file has been corrupted, TODO display an error message saying that file was corrupted
             }
         }
     }

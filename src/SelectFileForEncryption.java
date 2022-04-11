@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 public class SelectFileForEncryption extends Application {
 
     public void start(Stage stage) {
-        stage.setTitle("Select a file for encryption");
+        stage.setTitle("File Encryptor");
         Label label = new Label("Press to select file:");
         EncryptButton encryptButton = new EncryptButton();
         DecryptButton decryptButton = new DecryptButton();
