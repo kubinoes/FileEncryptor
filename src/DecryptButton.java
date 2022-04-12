@@ -11,7 +11,6 @@ public class DecryptButton extends Button {
         setOnAction(e -> {
             File file = fileChooser.showOpenDialog(new Stage());
             String fileName = file.getAbsolutePath();
-            System.out.println(fileName);
             DecryptFile.decrypt(fileName);
         });
     }

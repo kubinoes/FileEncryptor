@@ -9,6 +9,12 @@ public class EncryptButton extends Button {
         setText("Encrypt");
         FileChooser fileChooser = new FileChooser();
         setOnAction(e -> {
+            if (KeyStoreManager.getPassword() == null) {
+                // we need to show dialog to prompt user to input password
+                PasswordInputDialog inputDialog = new PasswordInputDialog("Type in your password");
+                inputDialog.showAndWait();
+                KeyStoreManager.setPassword(inputDialog.getEditor().getText().toCharArray());
+            }
             File file = fileChooser.showOpenDialog(new Stage());
             String fileName = file.getAbsolutePath();
             EncryptFile.encrypt(fileName);
