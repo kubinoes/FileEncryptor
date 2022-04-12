@@ -10,14 +10,17 @@ public class KeyStoreManager {
     static String dir = "/Users/jakub/Desktop";
     static String storeFileName = dir + "/" + "keystore.bks";
 
-    private static final ThreadLocal<char[]> password = new ThreadLocal<>();
-
-    public static char[] getPassword() {
-        return password.get();
-    }
-
-    public static void setPassword(char[] passwordInput) {
-        password.set(passwordInput);
+    public static boolean loadKeyStore(char[] psw) {
+        try {
+            KeyStore keyStore = KeyStore.getInstance("BKS", "BC");
+            FileInputStream fis = new FileInputStream(storeFileName);
+            keyStore.load(fis, psw);
+            fis.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     // load the keystore
@@ -25,14 +28,7 @@ public class KeyStoreManager {
         try {
             KeyStore keyStore = KeyStore.getInstance("BKS", "BC");
             FileInputStream fis = new FileInputStream(storeFileName);
-            // check if password isnt already saved in memory
-            // save it to memory in case it isnt
-            if (password.get() == null) {
-                System.out.println("Please type password");
-                Scanner scanner = new Scanner(System.in);
-                password.set(scanner.nextLine().toCharArray());
-            }
-            keyStore.load(fis, password.get());
+            keyStore.load(fis, User.getPassword());
             fis.close();
             return keyStore;
         } catch (Exception e) {
@@ -45,7 +41,7 @@ public class KeyStoreManager {
         SecretKeySpec key = null;
         try {
             KeyStore ks = loadKeyStore();
-            key = (SecretKeySpec) ks.getKey("key", password.get());
+            key = (SecretKeySpec) ks.getKey("key", User.getPassword());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -55,7 +51,7 @@ public class KeyStoreManager {
     public static void storeKeyStore(KeyStore keyStore) {
         try {
             FileOutputStream fOut = new FileOutputStream(storeFileName);
-            keyStore.store(fOut, password.get());
+            keyStore.store(fOut, User.getPassword());
             fOut.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,8 +81,8 @@ public class KeyStoreManager {
             KeyStore.SecretKeyEntry entry = new KeyStore.SecretKeyEntry(key);
             System.out.println("Please type password");
             Scanner scanner = new Scanner(System.in);
-            password.set(scanner.nextLine().toCharArray());
-            KeyStore.ProtectionParameter protection = new KeyStore.PasswordProtection(password.get());
+            User.setPassword(scanner.nextLine().toCharArray());
+            KeyStore.ProtectionParameter protection = new KeyStore.PasswordProtection(User.getPassword());
             keyStore.setEntry("key", entry, protection);
         } catch (Exception e) {
             e.printStackTrace();
