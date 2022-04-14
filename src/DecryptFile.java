@@ -1,43 +1,41 @@
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import org.bouncycastle.util.encoders.Hex;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 public class DecryptFile {
-    static String dir = "/Users/jakub/Desktop";
-    static String storeFileName = dir + "/" + "keystore.bks";
+    private static String storeFilePath = KeyStoreManager.storeFilePath;
 
     static void decrypt(String pathName) {
         String[] splitPath = pathName.split("\\.");
-        String[] splicedArray = Arrays.copyOfRange(splitPath, 0, splitPath.length - 2);
+        String[] splicedArray = Arrays.copyOfRange(splitPath, 0, splitPath.length - 1);
         String testFilePath = String.join(".", splicedArray);
 
-        File file = new File(storeFileName);
+        File file = new File(storeFilePath);
         // TODO message saying that key to decrypt is not available on the machine
         if (!file.exists()) {
             return;
         }
         SecretKeySpec secretKey = KeyStoreManager.getKey();
 
-        try {
-            // reading
-            String ivString = FileUtil.getIV("AES/CBC/PKCS5Padding", pathName);
-            IvParameterSpec iv = new IvParameterSpec(Hex.decode(ivString));
-            byte[] input = FileUtil.readAllBytes("AES/CBC/PKCS5Padding", pathName);
+        // reading
+        byte[] fileBytes = FileUtil.readAllBytes(pathName);
+        // read first 16 elements from fileBytes array to get IV
+        byte[] iv = Arrays.copyOfRange(fileBytes, 0, 16);
+        // read the rest of the file to get input for decryption
+        byte[] input = Arrays.copyOfRange(fileBytes, 16, fileBytes.length);
 
+        try {
             // decrypting
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
             byte[] output = cipher.doFinal(input);
 
             // writing
             FileUtil.write(testFilePath, output);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("exception" + e.toString());
             if (e.toString() == "exceptionjavax.crypto.IllegalBlockSizeException: last block incomplete in decryption") {
                 // file has been corrupted, TODO display an error message saying that file was corrupted
             }

@@ -11,8 +11,9 @@ public class SelectFileForEncryption extends Application {
         // main scene buttons
         EncryptButton encryptButton = new EncryptButton();
         DecryptButton decryptButton = new DecryptButton();
+        Button logoutButton = new Button("Log out");
 
-        HBox hBox = new HBox(20, encryptButton, decryptButton);
+        HBox hBox = new HBox(20, encryptButton, decryptButton, logoutButton);
         hBox.setAlignment(Pos.CENTER);
         Scene mainScene = new Scene(hBox, 300, 200);
 
@@ -30,6 +31,10 @@ public class SelectFileForEncryption extends Application {
         stage.setTitle("File Encryptor");
         Scene authScene = new Scene(authBox, 300, 200);
         stage.setScene(authScene);
+
+        logoutButton.setOnAction(e -> {
+            stage.setScene(authScene);
+        });
         stage.show();
     }
 }
