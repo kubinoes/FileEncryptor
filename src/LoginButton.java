@@ -5,14 +5,13 @@ import javafx.stage.Stage;
 import java.io.File;
 
 public class LoginButton extends Button {
-    private static String storeFilePath = KeyStoreManager.storeFilePath;
     private Integer counter = 3;
 
     LoginButton(Stage stage, Scene mainScene, Scene failScene) {
         setText("Login");
         setOnAction(e -> {
             // check for keystore.bks file
-            File keyStoreFile = new File(storeFilePath);
+            File keyStoreFile = new File(KeyStoreManager.storeFilePath);
             if (!keyStoreFile.exists()) {
                 // TODO display a message that user needs to create their secure key in order to proceed as it doesn't appear to be saved on their machine
                 return;

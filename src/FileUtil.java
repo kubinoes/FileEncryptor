@@ -1,7 +1,7 @@
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
+import java.util.Arrays;
 
 public class FileUtil {
     // create a FileEncryptor folder in users home directory
@@ -24,25 +24,16 @@ public class FileUtil {
         }
         return bytesRead; // returns {} if file does not exist
     }
-    public static void write(String plaintextFileName, byte[] output) {
-        // write out
-        try {
-            Files.write(Paths.get(plaintextFileName), output);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    public static void write(String transformation, String plaintextFileName, byte[] output) {
-        // if transformation is "AES/ECB/.../ this indicates file to be read is encrypted
-        // then add suffix "aes"
-        String outFile = "";
-        String[] parts = transformation.split("/");
-        // TODO else to throw an error
-        if (parts.length == 3 && parts[0].equals("AES")){
-            outFile = plaintextFileName + ".aes";
-            System.out.println(outFile);
-        } else {
 
+    public static void write(String filePathName, byte[] output) {
+        String outFile = "";
+        String[] parts = filePathName.split("\\.");
+        // if the file doesn't end with .aes, append it because the file to be written is encrypted
+        if (!parts[parts.length - 1].equals("aes")){
+            outFile = filePathName + ".aes";
+        } else {
+            String[] outFileArray = Arrays.copyOfRange(parts, 0, parts.length - 1);
+            outFile = String.join(".", outFileArray);
         }
         try {
             Files.write(Paths.get(outFile), output);

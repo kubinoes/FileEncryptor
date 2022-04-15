@@ -5,11 +5,9 @@ import java.io.File;
 import java.security.KeyStore;
 
 public class EncryptFile {
-    static String storeFilePath = KeyStoreManager.storeFilePath;
-
     public static void encrypt(String fileName) {
         //check if file with key exists
-        File file = new File(storeFilePath);
+        File file = new File(KeyStoreManager.storeFilePath);
         KeyStore keyStore;
         if (!file.exists()) {
             // TODO logout
@@ -34,7 +32,7 @@ public class EncryptFile {
             byte[] output = cipher.doFinal(input);
 
             // writing
-            FileUtil.write("AES/CBC/PKCS5Padding", fileName, output);
+            FileUtil.write(fileName, output);
         } catch (Exception e) {
             e.printStackTrace();
         }

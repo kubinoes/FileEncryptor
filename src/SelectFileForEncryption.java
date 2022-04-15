@@ -22,7 +22,6 @@ public class SelectFileForEncryption extends Application {
         label.setAlignment(Pos.CENTER);
         Scene failScene = new Scene(label, 700, 100);
 
-        // login and signup buttons
         LoginButton loginButton = new LoginButton(stage, mainScene, failScene);
         SignupButton signupButton = new SignupButton();
         HBox authBox = new HBox(20, loginButton, signupButton);

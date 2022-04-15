@@ -8,6 +8,7 @@ import java.util.Scanner;
 public class KeyStoreManager {
     public static String storeFilePath = (System.getProperty("user.home")) + "/FileEncryptor/" + "keystore.bks";
 
+    // check if keystore exists
     public static boolean loadKeyStore(char[] psw) {
         try {
             KeyStore keyStore = KeyStore.getInstance("BKS", "BC");

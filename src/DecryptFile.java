@@ -5,14 +5,9 @@ import java.io.File;
 import java.util.Arrays;
 
 public class DecryptFile {
-    private static String storeFilePath = KeyStoreManager.storeFilePath;
-
     static void decrypt(String pathName) {
-        String[] splitPath = pathName.split("\\.");
-        String[] splicedArray = Arrays.copyOfRange(splitPath, 0, splitPath.length - 1);
-        String testFilePath = String.join(".", splicedArray);
 
-        File file = new File(storeFilePath);
+        File file = new File(KeyStoreManager.storeFilePath);
         // TODO message saying that key to decrypt is not available on the machine
         if (!file.exists()) {
             return;
@@ -33,7 +28,7 @@ public class DecryptFile {
             byte[] output = cipher.doFinal(input);
 
             // writing
-            FileUtil.write(testFilePath, output);
+            FileUtil.write(pathName, output);
         } catch (Exception e) {
             e.printStackTrace();
             if (e.toString() == "exceptionjavax.crypto.IllegalBlockSizeException: last block incomplete in decryption") {
