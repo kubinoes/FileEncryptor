@@ -24,7 +24,8 @@ public class SelectFileForEncryption extends Application {
 
         LoginButton loginButton = new LoginButton(stage, mainScene, failScene);
         SignupButton signupButton = new SignupButton();
-        HBox authBox = new HBox(20, loginButton, signupButton);
+        TestButton testButton = new TestButton();
+        HBox authBox = new HBox(20, loginButton, signupButton, testButton);
         authBox.setAlignment(Pos.CENTER);
 
         stage.setTitle("File Encryptor");

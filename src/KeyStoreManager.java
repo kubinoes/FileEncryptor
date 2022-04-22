@@ -3,7 +3,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
-import java.util.Scanner;
 
 public class KeyStoreManager {
     public static String storeFilePath = (System.getProperty("user.home")) + "/FileEncryptor/" + "keystore.bks";
