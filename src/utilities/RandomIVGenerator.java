@@ -1,3 +1,5 @@
+package utilities;
+
 import org.bouncycastle.util.encoders.Hex;
 
 import java.security.NoSuchAlgorithmException;
@@ -5,7 +7,7 @@ import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 
 public class RandomIVGenerator {
-    static byte[] getRandomIV() {
+    public static byte[] getRandomIV() {
         byte[] defaultIV = Hex.decode("9f741fdb5d8845bdb48a94394e84f8a3");
         // generate random IV
         SecureRandom secureRandom;

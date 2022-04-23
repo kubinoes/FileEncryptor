@@ -1,3 +1,5 @@
+package viewComponents;
+
 import javafx.scene.control.TextInputDialog;
 
 public class PasswordInputDialog extends TextInputDialog {

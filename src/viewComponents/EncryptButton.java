@@ -1,19 +1,22 @@
+package viewComponents;
+
 import javafx.scene.control.Button;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import security.FileCipher;
 
 import java.io.File;
 import java.util.List;
 
-public class DecryptButton extends Button {
-    DecryptButton() {
-        setText("Decrypt");
+public class EncryptButton extends Button {
+    public EncryptButton() {
+        setText("Encrypt");
         FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().addAll(new ExtensionFilter("All files", "*.aes"));
+        fileChooser.getExtensionFilters().addAll(new ExtensionFilter("All Files", "*.*"));
         setOnAction(e -> {
             if (User.getPassword() == null) {
-                // prompt user for password
+                // we need to show dialog to prompt user to input password
                 PasswordInputDialog inputDialog = new PasswordInputDialog("Type in your password");
                 inputDialog.showAndWait();
                 User.setPassword(inputDialog.getEditor().getText().toCharArray());
@@ -21,7 +24,7 @@ public class DecryptButton extends Button {
             List<File> files = fileChooser.showOpenMultipleDialog(new Stage());
             for (int i = 0; i < files.size(); i++) {
                 String fileName = files.get(i).getAbsolutePath();
-                DecryptFile.decrypt(fileName);
+                FileCipher.encrypt(fileName);
             }
         });
     }

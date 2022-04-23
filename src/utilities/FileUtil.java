@@ -1,10 +1,12 @@
+package utilities;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class FileUtil {
-    // create a FileEncryptor folder in users home directory
+    // create a FileEncryptor folder in users home directory that will be used to store the keystore.bks file
     public static void createSupportDirectory() {
         try {
             File file = new File(System.getProperty("user.home") + "/FileEncryptor");

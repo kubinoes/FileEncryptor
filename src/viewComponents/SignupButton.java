@@ -1,10 +1,14 @@
+package viewComponents;
+
 import javafx.scene.control.Button;
+import utilities.FileUtil;
+import utilities.KeyStoreManager;
 
 import java.io.File;
 import java.security.KeyStore;
 
 public class SignupButton extends Button {
-    SignupButton() {
+    public SignupButton() {
         setText("Create your key");
         setOnAction(e ->{
             // check for keystore.bks file in home directory
