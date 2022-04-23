@@ -1,4 +1,4 @@
-package viewComponents;
+package utilities;
 
 import utilities.KeyStoreManager;
 

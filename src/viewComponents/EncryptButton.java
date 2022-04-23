@@ -1,10 +1,12 @@
 package viewComponents;
 
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import security.FileCipher;
+import utilities.User;
 
 import java.io.File;
 import java.util.List;
@@ -15,16 +17,22 @@ public class EncryptButton extends Button {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(new ExtensionFilter("All Files", "*.*"));
         setOnAction(e -> {
+            Stage stage = (Stage) getScene().getWindow();
             if (User.getPassword() == null) {
-                // we need to show dialog to prompt user to input password
-                PasswordInputDialog inputDialog = new PasswordInputDialog("Type in your password");
-                inputDialog.showAndWait();
-                User.setPassword(inputDialog.getEditor().getText().toCharArray());
+                // navigate to auth window
+                stage.setScene(new Scene(new AuthBox(stage), 300, 200));
             }
             List<File> files = fileChooser.showOpenMultipleDialog(new Stage());
-            for (int i = 0; i < files.size(); i++) {
-                String fileName = files.get(i).getAbsolutePath();
-                FileCipher.encrypt(fileName);
+            for (File file : files) {
+                String fileName = file.getAbsolutePath();
+                try {
+                    FileCipher.encrypt(fileName);
+                } catch (Exception e1) {
+                    if (e1.toString().equals("java.lang.Exception: Keystore missing")) {
+                        stage.setScene(new Scene(new AuthBox(stage), 300, 200));
+                    }
+                    e1.printStackTrace();
+                }
             }
         });
     }

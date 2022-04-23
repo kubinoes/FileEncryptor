@@ -4,6 +4,7 @@ import javafx.scene.control.Button;
 import security.FileCipher;
 import utilities.FileUtil;
 import utilities.KeyStoreManager;
+import utilities.User;
 
 import java.io.FileWriter;
 import java.io.File;
@@ -23,6 +24,7 @@ public class TestButton extends Button {
     public TestButton() {
         setText("Run Test");
         setOnAction(a ->{
+            System.out.println("Running test case.");
             // Step 1 create a file in user directory
             String testFilePath = System.getProperty("user.home") + "/testFileEncryptor.txt";
             try {
@@ -77,8 +79,14 @@ public class TestButton extends Button {
                 return;
             }
             // Step 6 encrypt it
-            FileCipher.encrypt(testFilePath);
-            printSuccess("6/15--->SUCCESS: File encrypted");
+            try {
+                FileCipher.encrypt(testFilePath);
+                printSuccess("6/15--->SUCCESS: File encrypted");
+            } catch (Exception e) {
+                e.printStackTrace();
+                printFail("6/15--->FAIL: Encryption failed!");
+                return;
+            }
             // Step 7 rename the original file to test file
             File originalFile = new File(testFilePath);
             File rename = new File(System.getProperty("user.home") + "/test.testFileEncryptor.txt");
@@ -89,8 +97,14 @@ public class TestButton extends Button {
                 return;
             }
             // Step 8 decrypt
-            FileCipher.decrypt(testFilePath + ".aes");
-            printSuccess("8/15--->SUCCESS: File decrypted");
+            try {
+                FileCipher.decrypt(testFilePath + ".aes");
+                printSuccess("8/15--->SUCCESS: File decrypted");
+            } catch (Exception e) {
+                e.printStackTrace();
+                printFail("8/15--->FAIL: Decryption failed!");
+                return;
+            }
             // Step 9 compare cipher text to original
             byte[] originalFileBytes = FileUtil.readAllBytes(System.getProperty("user.home") + "/test.testFileEncryptor.txt");
             byte[] cipherFileBytesWithIV = FileUtil.readAllBytes(testFilePath + ".aes");
@@ -161,6 +175,8 @@ public class TestButton extends Button {
             // Step 14 remove password from memory
             User.removePassword();
             printSuccess("15/15--->SUCCESS: Password removed from memory.");
+
+            System.out.println("Test finished");
         });
     }
 }

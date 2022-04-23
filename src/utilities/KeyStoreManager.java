@@ -1,6 +1,5 @@
 package utilities;
 
-import viewComponents.User;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

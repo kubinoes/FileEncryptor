@@ -1,5 +1,6 @@
 package security;
 
+import javafx.stage.Stage;
 import utilities.FileUtil;
 import utilities.KeyStoreManager;
 import utilities.RandomIVGenerator;
@@ -11,12 +12,11 @@ import java.io.File;
 import java.util.Arrays;
 
 public class FileCipher {
-    public static void encrypt(String fileName) {
+    public static void encrypt(String fileName) throws Exception {
         //check if file with key exists
         File file = new File(KeyStoreManager.storeFilePath);
         if (!file.exists()) {
-            // TODO logout
-            return;
+            throw new Exception("Keystore missing");
         }
         // fetch encryption key
         SecretKeySpec secretKey = KeyStoreManager.getKey();
@@ -39,14 +39,14 @@ public class FileCipher {
             FileUtil.write(fileName, output);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new Exception("Encryption failed.");
         }
     }
-    public static void decrypt(String pathName) {
+    public static void decrypt(String pathName) throws Exception {
 
         File file = new File(KeyStoreManager.storeFilePath);
         if (!file.exists()) {
-            // TODO logout;
-            return;
+            throw new Exception("Keystore missing");
         }
         SecretKeySpec secretKey = KeyStoreManager.getKey();
         // reading
@@ -65,9 +65,7 @@ public class FileCipher {
             FileUtil.write(pathName, output);
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.toString() == "exceptionjavax.crypto.IllegalBlockSizeException: last block incomplete in decryption") {
-                // file has been corrupted, TODO display an error message saying that file was corrupted
-            }
+            throw new Exception("File couldn't be decrypted!");
         }
     }
 }
