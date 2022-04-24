@@ -13,6 +13,132 @@ import java.security.KeyStore;
 import java.util.Arrays;
 
 public class TestButton extends Button {
+
+    private static final String originalFilePath = System.getProperty("user.home") + "/testFileEncryptor.txt";
+    private static final String renamedOriginalFilePath = System.getProperty("user.home") + "/test.testFileEncryptor.txt";
+    private static final String encryptedFilePath = originalFilePath + ".aes";
+    private static final String keyStorePath = System.getProperty("user.home") + "/FileEncryptor/keystore.bks";
+
+    private static final File originalFile = new File(originalFilePath);
+    private static final File renamedOriginalFile = new File(renamedOriginalFilePath);
+    private static final File decryptedFile = new File(originalFilePath);
+    private static final File encryptedFile = new File(encryptedFilePath);
+
+    private static final String password = "superSecretPassword";
+
+    public TestButton() {
+        setText("Run Test");
+        setOnAction(a ->{
+            System.out.println("Running test.");
+            // Step 1 create an empty file in user directory
+            try {
+                createEmptyFile();
+                printSuccess("SUCCESS: Empty file created.");
+            } catch (Exception e) {
+                printFail(e.toString());
+                return;
+            }
+            // Step 2 write a string to the original file
+            try {
+                modifyFile();
+                printSuccess("SUCCESS: File successfully edited.");
+            } catch (Exception e) {
+                printFail(e.toString());
+                return;
+            }
+            // Step 3 set password to the memory
+            User.setPassword(password.toCharArray());
+            printSuccess("SUCCESS: Password saved in memory.");
+            // Step 4 delete keystore if existed
+            try {
+                deleteKeyStore();
+                printSuccess("SUCCESS: Keystore either doesn't exist or was successfully deleted.");
+            } catch (Exception e) {
+                printFail(e.toString());
+                return;
+            }
+            // Step 5 create keystore
+            try {
+                createKeyStoreWithKey();
+                printSuccess("KeyStore and a key successfully created.");
+            } catch (Exception e) {
+                printFail(e.toString());
+                return;
+            }
+            // Step 6 encrypt original file
+            try {
+                FileCipher.encrypt(originalFilePath);
+                printSuccess("SUCCESS: File encrypted");
+            } catch (Exception e) {
+                e.printStackTrace();
+                printFail("FAIL: Encryption failed!");
+                return;
+            }
+            // Step 7 rename the original file to test file
+            if (originalFile.renameTo(renamedOriginalFile)) {
+                printSuccess("SUCCESS: Original file renamed.");
+            } else {
+                printFail("FAIL: Original file not renamed!");
+                return;
+            }
+            // Step 8 decrypt
+            try {
+                FileCipher.decrypt(encryptedFilePath);
+                printSuccess("SUCCESS: File decrypted");
+            } catch (Exception e) {
+                e.printStackTrace();
+                printFail("FAIL: Decryption failed!");
+                return;
+            }
+            // Step 9 compare cipher text to original
+            try {
+                compareEncryptedBytes();
+                printSuccess("SUCCESS: Encrypted file doesn't match the original.");
+            } catch (Exception e) {
+                printFail(e.toString());
+                return;
+            }
+            // Step 10 compare original with decrypted file
+            try {
+                compareDecryptedBytes();
+                printSuccess("SUCCESS: Decrypted file is the same as original file.");
+            } catch (Exception e) {
+                printFail(e.toString());
+            }
+            // Step 11 remove original file
+            if (renamedOriginalFile.delete()) {
+                printSuccess("SUCCESS: Original file successfully deleted.");
+            } else {
+                printFail("FAIL: Original file wasn't deleted!");
+            }
+            // Step 12 remove decrypted file
+            if (decryptedFile.delete()) {
+                printSuccess("SUCCESS: Decrypted file successfully deleted.");
+            } else {
+                printFail("FAIL: Decrypted file wasn't deleted!");
+            }
+            // Step 12 remove decrypted file
+            if (encryptedFile.delete()) {
+                printSuccess("SUCCESS: Decrypted file successfully deleted.");
+            } else {
+                printFail("FAIL: Decrypted file wasn't deleted!");
+            }
+            // Step 13 remove keystore
+            try {
+                deleteKeyStore();
+                printSuccess("SUCCESS: Keystore was successfully deleted.");
+            } catch (Exception e) {
+                printFail(e.toString());
+                return;
+            }
+            // Step 14 remove password from memory
+            User.removePassword();
+            printSuccess("SUCCESS: Password removed from memory.");
+            // test done
+            System.out.println("Test finished successfully");
+        });
+    }
+
     private void printSuccess(String message) {
         String ANSI_GREEN = "\u001B[32m";
         System.out.println(ANSI_GREEN + message + "\u001B[0m");
@@ -21,162 +147,86 @@ public class TestButton extends Button {
         String ANSI_RED = "\u001B[31m";
         System.out.println(ANSI_RED + message + "\u001B[0m");
     }
-    public TestButton() {
-        setText("Run Test");
-        setOnAction(a ->{
-            System.out.println("Running test case.");
-            // Step 1 create a file in user directory
-            String testFilePath = System.getProperty("user.home") + "/testFileEncryptor.txt";
-            try {
-                File fileToEncrypt = new File(testFilePath);
-                if (fileToEncrypt.createNewFile()) {
-                    printSuccess("1/15--->SUCCESS: Empty file created.");
-                } else {
-                    printFail("1/15--->FAIL: File already exists!");
-                    return;
-                }
-            } catch(IOException e) {
-                printFail("1/15--->FAIL:");
-                e.printStackTrace();
-                return;
-            }
-            // Step 2 write a string to the test file
-            try {
-                FileWriter fileWriter = new FileWriter(testFilePath);
-                fileWriter.write("Very secret message");
-                fileWriter.close();
-                printSuccess("2/15--->SUCCESS: File edited.");
-            } catch (IOException e) {
-                printFail("2/15--->FAIL:");
-                e.printStackTrace();
-                return;
-            }
-            // Step 3 set password to the memory
-            String password = "superSecretPassword";
-            User.setPassword(password.toCharArray());
-            printSuccess("3/15--->SUCCESS: Password saved in memory.");
-            // Step 4 delete existing keystore
-            File storeFile = new File(System.getProperty("user.home") + "/FileEncryptor/keystore.bks");
-            if (storeFile.exists()) {
-                if (storeFile.delete()) {
-                    printSuccess("4/15--->SUCCESS: The existing keystore deleted.");
-                } else {
-                    printFail("4/15--->FAIL: Existing keystore wasn't deleted!");
-                    return;
-                }
-            } else {
-                printSuccess("4/15--->SUCCESS: Keystore doesn't exist.");
-            }
-            // Step 5 create test keystore
-            try {
-                KeyStore keyStore = KeyStoreManager.createKeyStore();
-                KeyStoreManager.generateAndAddKey(keyStore);
-                KeyStoreManager.storeKeyStore(keyStore);
-                printSuccess("5/15--->SUCCESS: New keystore created successfully.");
-            } catch (Exception e) {
-                printFail("5/15--->FAIL:");
-                e.printStackTrace();
-                return;
-            }
-            // Step 6 encrypt it
-            try {
-                FileCipher.encrypt(testFilePath);
-                printSuccess("6/15--->SUCCESS: File encrypted");
-            } catch (Exception e) {
-                e.printStackTrace();
-                printFail("6/15--->FAIL: Encryption failed!");
-                return;
-            }
-            // Step 7 rename the original file to test file
-            File originalFile = new File(testFilePath);
-            File rename = new File(System.getProperty("user.home") + "/test.testFileEncryptor.txt");
-            if (originalFile.renameTo(rename)) {
-                printSuccess("7/15--->SUCCESS: Original file renamed.");
-            } else {
-                printFail("7/15--->FAIL: Original file not renamed!");
-                return;
-            }
-            // Step 8 decrypt
-            try {
-                FileCipher.decrypt(testFilePath + ".aes");
-                printSuccess("8/15--->SUCCESS: File decrypted");
-            } catch (Exception e) {
-                e.printStackTrace();
-                printFail("8/15--->FAIL: Decryption failed!");
-                return;
-            }
-            // Step 9 compare cipher text to original
-            byte[] originalFileBytes = FileUtil.readAllBytes(System.getProperty("user.home") + "/test.testFileEncryptor.txt");
-            byte[] cipherFileBytesWithIV = FileUtil.readAllBytes(testFilePath + ".aes");
-            byte[] cipherFileBytes = Arrays.copyOfRange(cipherFileBytesWithIV, 16, cipherFileBytesWithIV.length);
-            if (Arrays.equals(originalFileBytes, cipherFileBytes)) {
-                printFail("9/15--->FAIL: Original file matches the encrypted file!");
-                return;
-            } else {
-                System.out.print("Original file bytes:  ");
-                for (byte originalFileByte : originalFileBytes) {
-                    System.out.print(originalFileByte);
-                }
-                System.out.println(" ");
-                System.out.print("Encrypted file bytes: ");
-                for (byte cipherFileByte : cipherFileBytes) {
-                    System.out.print(cipherFileByte);
-                }
-                System.out.println(" ");
-                printSuccess("9/15--->SUCCESS: Encrypted file doesn't match the original.");
-            }
-            // Step 10 compare original with decrypted file
-            byte[] decryptedFileBytes = FileUtil.readAllBytes(testFilePath);
-            if (Arrays.equals(originalFileBytes, decryptedFileBytes)) {
-                System.out.print("Original:  ");
-                for (byte originalFileByte : originalFileBytes) {
-                    System.out.print(originalFileByte);
-                }
-                System.out.println(" ");
-                System.out.print("Decrypted: ");
-                for (byte decryptedFileByte : decryptedFileBytes) {
-                    System.out.print(decryptedFileByte);
-                }
-                System.out.println(" ");
 
-                printSuccess("11/15--->SUCCESS: Decrypted file is the same as original file.");
-            } else {
-                printFail("10/15--->FAIL: Original file is not the same as the decrypted file!");
-                return;
+    private void createEmptyFile() throws Exception {
+        try {
+            if (!originalFile.createNewFile()) {
+                throw new Exception("FAIL: File already exists!");
             }
-            // Step 11 remove original file
-            if (rename.delete()) {
-                printSuccess("11/15--->SUCCESS: Original file successfully deleted.");
-            } else {
-                printFail("11/15--->FAIL: Original file wasn't deleted!");
-            }
-            // Step 12 remove decrypted file
-            if (originalFile.delete()) {
-                printSuccess("12/15--->SUCCESS: Decrypted file successfully deleted.");
-            } else {
-                printFail("12/15--->FAIL: Decrypted file wasn't deleted!");
-            }
-            // Step 12 remove decrypted file
-            File encryptedFile = new File(testFilePath + ".aes");
-            if (encryptedFile.delete()) {
-                printSuccess("13/15--->SUCCESS: Decrypted file successfully deleted.");
-            } else {
-                printFail("13/15--->FAIL: Decrypted file wasn't deleted!");
-            }
-            // Step 13 remove keystore
-            if (storeFile.exists()) {
-                if (storeFile.delete()) {
-                    printSuccess("14/15--->SUCCESS: Test keystore deleted.");
-                } else {
-                    printFail("14/15--->FAIL: Test keystore wasn't deleted!");
-                    return;
-                }
-            }
-            // Step 14 remove password from memory
-            User.removePassword();
-            printSuccess("15/15--->SUCCESS: Password removed from memory.");
+        } catch(IOException e) {
+            e.printStackTrace();
+            throw new Exception("FAIL: Failed to create a file.");
+        }
+    }
 
-            System.out.println("Test finished");
-        });
+    private void modifyFile() throws Exception {
+        try {
+            FileWriter fileWriter = new FileWriter(originalFilePath);
+            fileWriter.write("Very secret message");
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new Exception("Failed to edit the file.");
+        }
+    }
+
+    private void compareEncryptedBytes() throws Exception {
+        byte[] originalFileBytes = FileUtil.readAllBytes(originalFilePath);
+        byte[] encryptedFileBytesWithIV = FileUtil.readAllBytes(encryptedFilePath);
+        byte[] encryptedFileBytes = Arrays.copyOfRange(encryptedFileBytesWithIV, 16, encryptedFileBytesWithIV.length);
+        if (Arrays.equals(originalFileBytes, encryptedFileBytes)) {
+            throw new Exception("FAIL: Original file matches the encrypted file!");
+        } else {
+            System.out.print("Original file bytes:  ");
+            for (byte originalFileByte : originalFileBytes) {
+                System.out.print(originalFileByte);
+            }
+            System.out.println(" ");
+            System.out.print("Encrypted file bytes: ");
+            for (byte cipherFileByte : encryptedFileBytes) {
+                System.out.print(cipherFileByte);
+            }
+            System.out.println(" ");
+        }
+    }
+
+    private void compareDecryptedBytes() throws Exception {
+        byte[] originalFileBytes = FileUtil.readAllBytes(originalFilePath);
+        byte[] decryptedFileBytes = FileUtil.readAllBytes(originalFilePath);
+        if (Arrays.equals(originalFileBytes, decryptedFileBytes)) {
+            System.out.print("Original:  ");
+            for (byte originalFileByte : originalFileBytes) {
+                System.out.print(originalFileByte);
+            }
+            System.out.println(" ");
+            System.out.print("Decrypted: ");
+            for (byte decryptedFileByte : decryptedFileBytes) {
+                System.out.print(decryptedFileByte);
+            }
+            System.out.println(" ");
+        } else {
+            throw new Exception("FAIL: Original file is not the same as the decrypted file!");
+        }
+    }
+
+    private void deleteKeyStore() throws Exception {
+        File storeFile = new File(keyStorePath);
+        if (storeFile.exists()) {
+            if (!storeFile.delete()) {
+                throw new Exception("FAIL: Existing keystore wasn't deleted!");
+            }
+        }
+    }
+
+    private void createKeyStoreWithKey() throws Exception {
+        try {
+            KeyStore keyStore = KeyStoreManager.createKeyStore();
+            KeyStoreManager.generateAndAddKey(keyStore);
+            KeyStoreManager.storeKeyStore(keyStore);
+            printSuccess("SUCCESS: New keystore created successfully.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("FAIL: New keystore wasn't created.");
+        }
     }
 }

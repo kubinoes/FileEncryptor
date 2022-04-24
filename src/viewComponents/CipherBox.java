@@ -15,7 +15,6 @@ public class CipherBox extends HBox {
         logoutButton.setOnAction(e -> {
             stage.setScene(new Scene(new AuthBox(stage), 300, 200));
         });
-
         getChildren().addAll(encryptButton, decryptButton, logoutButton);
         setSpacing(20);
         setAlignment(Pos.CENTER);
