@@ -8,6 +8,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.File;
+import java.security.MessageDigest;
 import java.util.Arrays;
 
 public class FileCipher {
@@ -23,25 +24,38 @@ public class FileCipher {
         byte[] iv = RandomIVGenerator.getRandomIV();
         // read file
         byte[] fileBytes = FileUtil.readAllBytes(fileName);
+        // create message digest
+        byte[] digest;
+        try {
+            digest = createDigest(fileBytes);
+        } catch (Exception e) {
+            throw new Exception("Encryption failed. Hash value couldn't be created.");
+        }
         // merge iv and file byte arrays
         int ivLength = iv.length;
         int fileLength = fileBytes.length;
+        // combine iv, message digest and file bytes to be encrypted together
         byte[] input = new byte[ivLength + fileLength];
         System.arraycopy(iv, 0, input, 0, ivLength);
         System.arraycopy(fileBytes, 0, input, ivLength, fileLength);
-        // encrypt and write the file
+        // encrypt and write to the file
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(iv));
             byte[] output = cipher.doFinal(input);
-
-            FileUtil.write(fileName, output);
+            int digestLength = digest.length;
+            int outputLength = output.length;
+            byte[] outputFinal = new byte[digestLength + outputLength];
+            System.arraycopy(digest, 0, outputFinal, 0, digest.length);
+            System.arraycopy(output, 0, outputFinal, digestLength, outputLength);
+            FileUtil.write(fileName, outputFinal);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Encryption failed.");
         }
     }
     public static void decrypt(String pathName) throws Exception {
+        Exception exception = new Exception("Corrupted file, failed to decrypt!");
 
         File file = new File(KeyStoreManager.storeFilePath);
         if (!file.exists()) {
@@ -50,21 +64,48 @@ public class FileCipher {
         SecretKeySpec secretKey = KeyStoreManager.getKey();
         // reading
         byte[] fileBytes = FileUtil.readAllBytes(pathName);
-        // read first 16 elements from fileBytes array to get IV
-        byte[] iv = Arrays.copyOfRange(fileBytes, 0, 16);
+        // read digest 0..32
+        byte[] digest = Arrays.copyOfRange(fileBytes, 0, 32);
+        // read iv 32..48
+        byte[] iv = Arrays.copyOfRange(fileBytes, 32, 48);
         // read the rest of the file that needs to be decrypted
-        byte[] input = Arrays.copyOfRange(fileBytes, 16, fileBytes.length);
-
+        byte[] input = Arrays.copyOfRange(fileBytes, 48, fileBytes.length);
         // decrypt and write out the file
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
             byte[] output = cipher.doFinal(input);
-
-            FileUtil.write(pathName, output);
+            // read from 16th to 48th byte from fileBytesArray to get message digest
+            if (verifyDigest(digest, output)) {
+                FileUtil.write(pathName, output);
+            } else {
+                throw exception;
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("File couldn't be decrypted!");
+            throw exception;
+        }
+    }
+    public static byte[] createDigest(byte[] input) throws Exception {
+        try {
+            // compute hash value from plaintext
+            MessageDigest digest = MessageDigest.getInstance("SHA-256", "BC");
+            //digest.update(input);
+            byte[] hashValue = digest.digest(input);
+            // return hashValue so it can be written into cipher text
+            return hashValue;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Message digest not created!");
+        }
+    }
+    public static boolean verifyDigest(byte[] storedDigest, byte[] plainText) {
+        try {
+            byte[] computedDigest = createDigest(plainText);
+            return MessageDigest.isEqual(computedDigest, storedDigest);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

@@ -30,8 +30,11 @@ public class DecryptButton extends Button {
                 try {
                     FileCipher.decrypt(fileName);
                 } catch (Exception e1) {
+                    e1.printStackTrace();
                     if (e1.toString().equals("java.lang.Exception: Keystore missing")) {
                         stage.setScene(new Scene(new AuthBox(stage), 300, 200));
+                    } else if (e1.toString().equals("java.lang.Exception: Corrupted file, failed to decrypt!")) {
+                        new ErrorDialog("File couldn't be decrypted because it was tampered with!").showAndWait();
                     }
                     e1.printStackTrace();
                 }

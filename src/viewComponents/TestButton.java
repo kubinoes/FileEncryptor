@@ -162,7 +162,7 @@ public class TestButton extends Button {
     private void modifyFile() throws Exception {
         try {
             FileWriter fileWriter = new FileWriter(originalFilePath);
-            fileWriter.write("Very secret message");
+            fileWriter.write("Very secret message...");
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
