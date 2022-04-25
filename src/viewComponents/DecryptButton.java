@@ -6,7 +6,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import security.FileCipher;
-import utilities.User;
+import utilities.PasswordUtil;
 
 import java.io.File;
 import java.util.List;
@@ -20,7 +20,7 @@ public class DecryptButton extends Button {
         fileChooser.getExtensionFilters().addAll(new ExtensionFilter("All files", "*.aes"));
         setOnAction(e -> {
             Stage stage = (Stage) getScene().getWindow();
-            if (User.getPassword() == null) {
+            if (PasswordUtil.getPassword() == null) {
                 // navigate to auth window
                 stage.setScene(new Scene(new AuthBox(stage), 300, 200));
             }

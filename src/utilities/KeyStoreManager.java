@@ -28,7 +28,7 @@ public class KeyStoreManager {
         try {
             KeyStore keyStore = KeyStore.getInstance("BKS", "BC");
             FileInputStream fis = new FileInputStream(storeFilePath);
-            keyStore.load(fis, User.getPassword());
+            keyStore.load(fis, PasswordUtil.getPassword());
             fis.close();
             return keyStore;
         } catch (Exception e) {
@@ -41,7 +41,7 @@ public class KeyStoreManager {
         SecretKeySpec key = null;
         try {
             KeyStore ks = loadKeyStore();
-            key = (SecretKeySpec) ks.getKey("key", User.getPassword());
+            key = (SecretKeySpec) ks.getKey("key", PasswordUtil.getPassword());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -51,7 +51,7 @@ public class KeyStoreManager {
     public static void storeKeyStore(KeyStore keyStore) {
         try {
             FileOutputStream fOut = new FileOutputStream(storeFilePath);
-            keyStore.store(fOut, User.getPassword());
+            keyStore.store(fOut, PasswordUtil.getPassword());
             fOut.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -79,7 +79,7 @@ public class KeyStoreManager {
             SecretKeySpec key = new SecretKeySpec(keyBytes, "AES");
             // add key to keystore
             KeyStore.SecretKeyEntry entry = new KeyStore.SecretKeyEntry(key);
-            KeyStore.ProtectionParameter protection = new KeyStore.PasswordProtection(User.getPassword());
+            KeyStore.ProtectionParameter protection = new KeyStore.PasswordProtection(PasswordUtil.getPassword());
             keyStore.setEntry("key", entry, protection);
         } catch (Exception e) {
             e.printStackTrace();

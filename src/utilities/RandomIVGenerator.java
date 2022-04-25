@@ -17,10 +17,7 @@ public class RandomIVGenerator {
                 byte[] iv = new byte[16];
                 secureRandom.nextBytes(iv);
                 return iv;
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-                return defaultIV;
-            } catch (NoSuchProviderException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return defaultIV;
             }

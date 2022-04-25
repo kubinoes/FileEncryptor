@@ -1,6 +1,6 @@
 package utilities;
 
-public class User {
+public class PasswordUtil {
     // password and authentication to be stored in memory
     private static final ThreadLocal<char[]> password = new ThreadLocal<>();
 

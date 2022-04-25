@@ -6,7 +6,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import utilities.FileUtil;
 import utilities.KeyStoreManager;
-import utilities.User;
+import utilities.PasswordUtil;
 
 import java.io.File;
 import java.security.KeyStore;
@@ -32,7 +32,7 @@ public class SignupButton extends Button {
                     char[] confirmPsw = password.getValue();
 
                     if (Arrays.equals(psw, confirmPsw)){
-                        User.setPassword(psw);
+                        PasswordUtil.setPassword(psw);
                         KeyStore keyStore = KeyStoreManager.createKeyStore();
                         KeyStoreManager.generateAndAddKey(keyStore);
                         KeyStoreManager.storeKeyStore(keyStore);

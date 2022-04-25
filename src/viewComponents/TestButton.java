@@ -4,7 +4,7 @@ import javafx.scene.control.Button;
 import security.FileCipher;
 import utilities.FileUtil;
 import utilities.KeyStoreManager;
-import utilities.User;
+import utilities.PasswordUtil;
 
 import java.io.FileWriter;
 import java.io.File;
@@ -47,7 +47,7 @@ public class TestButton extends Button {
                 return;
             }
             // Step 3 set password to the memory
-            User.setPassword(password.toCharArray());
+            PasswordUtil.setPassword(password.toCharArray());
             printSuccess("SUCCESS: Password saved in memory.");
             // Step 4 delete keystore if existed
             try {
@@ -132,7 +132,7 @@ public class TestButton extends Button {
                 return;
             }
             // Step 14 remove password from memory
-            User.removePassword();
+            PasswordUtil.removePassword();
             printSuccess("SUCCESS: Password removed from memory.");
             // test done
             System.out.println("Test finished successfully");

@@ -60,7 +60,7 @@ public class SignupDialog extends Dialog<Pair<char[],char[]>> {
         // convert the result to Pair<String, String>
         setResultConverter(dialogButton ->{
             if (dialogButton == signupButtonType) {
-                return new Pair<char[], char[]>(password.getText().toCharArray(), confirmPassword.getText().toCharArray());
+                return new Pair<>(password.getText().toCharArray(), confirmPassword.getText().toCharArray());
             }
             return null;
         });

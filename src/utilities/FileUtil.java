@@ -28,7 +28,7 @@ public class FileUtil {
     }
 
     public static void write(String filePathName, byte[] output) {
-        String outFile = "";
+        String outFile;
         String[] parts = filePathName.split("\\.");
         // if the file doesn't end with .aes, append it because the file to be written is encrypted
         if (!parts[parts.length - 1].equals("aes")){

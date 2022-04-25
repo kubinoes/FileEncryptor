@@ -88,12 +88,9 @@ public class FileCipher {
     }
     public static byte[] createDigest(byte[] input) throws Exception {
         try {
-            // compute hash value from plaintext
+            // compute and return hash value from plaintext
             MessageDigest digest = MessageDigest.getInstance("SHA-256", "BC");
-            //digest.update(input);
-            byte[] hashValue = digest.digest(input);
-            // return hashValue so it can be written into cipher text
-            return hashValue;
+            return digest.digest(input);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Message digest not created!");

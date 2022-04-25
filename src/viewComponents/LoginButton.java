@@ -4,7 +4,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import utilities.KeyStoreManager;
-import utilities.User;
+import utilities.PasswordUtil;
 
 import java.io.File;
 import java.util.Optional;
@@ -24,9 +24,9 @@ public class LoginButton extends Button {
                 Optional<char[]> result = inputDialog.showAndWait();
                 result.ifPresent(password -> {
                     //char[] pswInput = inputDialog.getEditor().getText().toCharArray();
-                    if (User.verifyPassword(password)) {
+                    if (PasswordUtil.verifyPassword(password)) {
                         // change scene to display encrypt and decrypt buttons
-                        User.setPassword(password);
+                        PasswordUtil.setPassword(password);
                         stage.setScene(new Scene(new CipherBox(stage), 300, 200));
                     } else {
                         // let user have 3 password attempts per session
