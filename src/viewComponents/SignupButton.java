@@ -30,15 +30,18 @@ public class SignupButton extends Button {
                     // validate password
                     char[] psw = password.getKey();
                     char[] confirmPsw = password.getValue();
-
-                    if (Arrays.equals(psw, confirmPsw)){
-                        PasswordUtil.setPassword(psw);
-                        KeyStore keyStore = KeyStoreManager.createKeyStore();
-                        KeyStoreManager.generateAndAddKey(keyStore);
-                        KeyStoreManager.storeKeyStore(keyStore);
-                        stage.setScene(new Scene(new CipherBox(stage), 300, 200));
+                    if (PasswordUtil.validatePassword(psw)) {
+                        if (Arrays.equals(psw, confirmPsw)){
+                            PasswordUtil.setPassword(psw);
+                            KeyStore keyStore = KeyStoreManager.createKeyStore();
+                            KeyStoreManager.generateAndAddKey(keyStore);
+                            KeyStoreManager.storeKeyStore(keyStore);
+                            stage.setScene(new Scene(new CipherBox(stage), 300, 200));
+                        } else {
+                            new ErrorDialog("Passwords do not match, try again.").showAndWait();
+                        }
                     } else {
-                        new ErrorDialog("Passwords do not match, try again.").showAndWait();
+                        new ErrorDialog("Please choose a different password! Make sure to follow the following password requirements: At least one uppercase and one lowercase alphabetical character, one number and one special character from the following set: [@#$%?!_'^].").showAndWait();
                     }
                 });
             }
