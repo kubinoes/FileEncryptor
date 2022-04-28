@@ -41,7 +41,7 @@ public class SignupButton extends Button {
                             new ErrorDialog("Passwords do not match, try again.").showAndWait();
                         }
                     } else {
-                        new ErrorDialog("Please choose a different password! Make sure to follow the following password requirements: At least one uppercase and one lowercase alphabetical character, one number and one special character from the following set: [@#$%?!_'^].").showAndWait();
+                        new ErrorDialog("Please choose a different password! Make sure to follow the following password requirements: The password needs to be between 8-20 characters long and contain at least one uppercase and one lowercase alphabetical character, one number and one special character from the following set: [@#$%?!_'^].").showAndWait();
                     }
                 });
             }
