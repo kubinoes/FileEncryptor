@@ -56,13 +56,14 @@ public class SignupDialog extends Dialog<Pair<char[],char[]>> {
         password.textProperty().addListener(((observableValue, oldValue, newValue) -> {
             // enable confirm password field if password is not empty, disable if empty
             confirmPassword.setDisable(newValue.trim().isEmpty());
-            // disable signup button if password empty
+            if (newValue.trim().isEmpty()) {
+                signupButton.setDisable(true);
+            }
+        }));
+        // listen for changes in confirm password
+        confirmPassword.textProperty().addListener(((observableValue, oldValue, newValue) -> {
+            // enable signup button if confirm password field is not empty, disable if empty
             signupButton.setDisable(newValue.trim().isEmpty());
-            // listen for changes in confirm password
-            confirmPassword.textProperty().addListener(((obV, oV, nV) -> {
-                // enable signup button if confirm password field is not empty, disable if empty
-                signupButton.setDisable(nV.trim().isEmpty());
-            }));
         }));
 
         // convert the result to Pair<String, String>
