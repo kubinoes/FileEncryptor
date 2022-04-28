@@ -30,7 +30,7 @@ public class PasswordUtil {
         // regex to limit to lowercase and uppercase alphabetical characters, digits and certain characters
         // make sure that each of the above mentioned occurs at least once in the password
         // limit password from min 8 to max 20 characters
-        String regex = "^[a-zA-Z\\d@#$%+/\\\\.,?!:'^~\\-_\\[\\](){}]*((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%?!_'^])).{8,20}$";
+        String regex = "^[a-zA-Z\\d@#$%+/\\\\.,?!:'^~\\-_\\[\\](){}]*((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%+/\\\\.,?!:'^~\\-_\\[\\](){}])).{8,20}$";
         return Pattern.matches(regex, passwordString);
     }
 }

@@ -32,6 +32,7 @@ public class TestButton extends Button {
             System.out.println("Running test.");
             // Step 1 create an empty file in user directory
             try {
+                System.out.println("Creating an empty file.");
                 createEmptyFile();
                 printSuccess("SUCCESS: Empty file created.");
             } catch (Exception e) {
@@ -40,6 +41,7 @@ public class TestButton extends Button {
             }
             // Step 2 write a string to the original file
             try {
+                System.out.println("Modifying the file.");
                 modifyFile();
                 printSuccess("SUCCESS: File successfully edited.");
             } catch (Exception e) {
@@ -47,25 +49,29 @@ public class TestButton extends Button {
                 return;
             }
             // Step 3 set password to the memory
+            System.out.println("Saving password to the memory.");
             PasswordUtil.setPassword(password.toCharArray());
             printSuccess("SUCCESS: Password saved in memory.");
             // Step 4 delete keystore if existed
             try {
+                System.out.println("Deleting existing keystore.");
                 deleteKeyStore();
                 printSuccess("SUCCESS: Keystore either doesn't exist or was successfully deleted.");
             } catch (Exception e) {
                 printFail(e.toString());
                 return;
             }
-            // Step 5 create keystore
+            // Step 5 create keystore with a key
             try {
+                System.out.println("Creating new keystore and secure key.");
                 createKeyStoreWithKey();
-                printSuccess("KeyStore and a key successfully created.");
+                printSuccess("SUCCESS: KeyStore and a key successfully created.");
             } catch (Exception e) {
                 printFail(e.toString());
                 return;
             }
             // Step 6 encrypt original file
+            System.out.println("Encrypting.");
             try {
                 FileCipher.encrypt(originalFilePath);
                 printSuccess("SUCCESS: File encrypted");
@@ -75,6 +81,7 @@ public class TestButton extends Button {
                 return;
             }
             // Step 7 rename the original file to test file
+            System.out.println("Renaming the original file.");
             if (originalFile.renameTo(renamedOriginalFile)) {
                 printSuccess("SUCCESS: Original file renamed.");
             } else {
@@ -83,6 +90,7 @@ public class TestButton extends Button {
             }
             // Step 8 decrypt
             try {
+                System.out.println("Decrypting.");
                 FileCipher.decrypt(encryptedFilePath);
                 printSuccess("SUCCESS: File decrypted");
             } catch (Exception e) {
@@ -92,6 +100,7 @@ public class TestButton extends Button {
             }
             // Step 9 compare cipher text to original
             try {
+                System.out.println("Comparing cipher text with original plaintext.");
                 compareEncryptedBytes();
                 printSuccess("SUCCESS: Encrypted file doesn't match the original.");
             } catch (Exception e) {
@@ -100,24 +109,28 @@ public class TestButton extends Button {
             }
             // Step 10 compare original with decrypted file
             try {
+                System.out.println("Comparing decrypted plaintext with original plaintext.");
                 compareDecryptedBytes();
                 printSuccess("SUCCESS: Decrypted file is the same as original file.");
             } catch (Exception e) {
                 printFail(e.toString());
             }
             // Step 11 remove original file
+            System.out.println("Deleting original file.");
             if (renamedOriginalFile.delete()) {
                 printSuccess("SUCCESS: Original file successfully deleted.");
             } else {
                 printFail("FAIL: Original file wasn't deleted!");
             }
             // Step 12 remove decrypted file
+            System.out.println("Deleting decrypted file.");
             if (decryptedFile.delete()) {
                 printSuccess("SUCCESS: Decrypted file successfully deleted.");
             } else {
                 printFail("FAIL: Decrypted file wasn't deleted!");
             }
-            // Step 12 remove decrypted file
+            // Step 12 remove encrypted file
+            System.out.println("Deleting encrypted file.");
             if (encryptedFile.delete()) {
                 printSuccess("SUCCESS: Decrypted file successfully deleted.");
             } else {
@@ -125,6 +138,7 @@ public class TestButton extends Button {
             }
             // Step 13 remove keystore
             try {
+                System.out.println("Deleting keystore.");
                 deleteKeyStore();
                 printSuccess("SUCCESS: Keystore was successfully deleted.");
             } catch (Exception e) {
@@ -132,6 +146,7 @@ public class TestButton extends Button {
                 return;
             }
             // Step 14 remove password from memory
+            System.out.println("Deleting password from memory.");
             PasswordUtil.removePassword();
             printSuccess("SUCCESS: Password removed from memory.");
             // test done
@@ -151,11 +166,11 @@ public class TestButton extends Button {
     private void createEmptyFile() throws Exception {
         try {
             if (!originalFile.createNewFile()) {
-                throw new Exception("FAIL: File already exists!");
+                throw new Exception("FAILURE: File already exists!");
             }
         } catch(IOException e) {
             e.printStackTrace();
-            throw new Exception("FAIL: Failed to create a file.");
+            throw new Exception("FAILURE: Failed to create a file.");
         }
     }
 
@@ -166,7 +181,7 @@ public class TestButton extends Button {
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
-            throw new Exception("Failed to edit the file.");
+            throw new Exception("FAILURE: Failed to edit the file.");
         }
     }
 
@@ -175,7 +190,7 @@ public class TestButton extends Button {
         byte[] encryptedFileBytesWithIV = FileUtil.readAllBytes(encryptedFilePath);
         byte[] encryptedFileBytes = Arrays.copyOfRange(encryptedFileBytesWithIV, 16, encryptedFileBytesWithIV.length);
         if (Arrays.equals(originalFileBytes, encryptedFileBytes)) {
-            throw new Exception("FAIL: Original file matches the encrypted file!");
+            throw new Exception("FAILURE: Original file matches the encrypted file!");
         } else {
             System.out.print("Original file bytes:  ");
             for (byte originalFileByte : originalFileBytes) {
@@ -205,7 +220,7 @@ public class TestButton extends Button {
             }
             System.out.println(" ");
         } else {
-            throw new Exception("FAIL: Original file is not the same as the decrypted file!");
+            throw new Exception("FAILURE: Original file is not the same as the decrypted file!");
         }
     }
 
@@ -213,7 +228,7 @@ public class TestButton extends Button {
         File storeFile = new File(keyStorePath);
         if (storeFile.exists()) {
             if (!storeFile.delete()) {
-                throw new Exception("FAIL: Existing keystore wasn't deleted!");
+                throw new Exception("FAILURE: Existing keystore wasn't deleted!");
             }
         }
     }
@@ -226,7 +241,7 @@ public class TestButton extends Button {
             printSuccess("SUCCESS: New keystore created successfully.");
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("FAIL: New keystore wasn't created.");
+            throw new Exception("FAILURE: New keystore wasn't created.");
         }
     }
 }
