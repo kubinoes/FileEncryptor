@@ -1,5 +1,6 @@
 package security;
 
+import org.bouncycastle.util.encoders.Hex;
 import utilities.FileUtil;
 import utilities.KeyStoreManager;
 import utilities.RandomIVGenerator;
@@ -7,6 +8,7 @@ import utilities.RandomIVGenerator;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.spec.IvParameterSpec;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.security.MessageDigest;
 import java.util.Arrays;
@@ -31,27 +33,18 @@ public class FileCipher {
         } catch (Exception e) {
             throw new Exception("Encryption failed. Hash value couldn't be created.");
         }
-        // merge iv and file byte arrays
-        int ivLength = iv.length;
-        int fileLength = fileBytes.length;
-        // combine iv and file bytes to be encrypted together
-        byte[] input = new byte[ivLength + fileLength];
-        System.arraycopy(iv, 0, input, 0, ivLength);
-        System.arraycopy(fileBytes, 0, input, ivLength, fileLength);
         // encrypt and write to the file
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(iv));
-            byte[] output = cipher.doFinal(input);
+            byte[] output = cipher.doFinal(fileBytes);
+            // add message digest, iv and cipher text together and write to a file
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            outputStream.write(digest);
+            outputStream.write(iv);
+            outputStream.write(output);
 
-            // add message digest at the beginning of the new file
-            int digestLength = digest.length;
-            int outputLength = output.length;
-            byte[] outputFinal = new byte[digestLength + outputLength];
-            System.arraycopy(digest, 0, outputFinal, 0, digest.length);
-            System.arraycopy(output, 0, outputFinal, digestLength, outputLength);
-
-            FileUtil.write(fileName, outputFinal);
+            FileUtil.write(fileName, outputStream.toByteArray());
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Encryption failed.");
