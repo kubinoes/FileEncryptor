@@ -1,3 +1,7 @@
+/* Signup dialog with multiple input fields
+*  Inspired and adapted from: https://code.makery.ch/blog/javafx-dialogs-official/
+* */
+
 package viewComponents;
 
 import javafx.application.Platform;
@@ -28,9 +32,12 @@ public class SignupDialog extends Dialog<Pair<char[],char[]>> {
         confirmPassword.setDisable(true);
         confirmPassword.setPromptText("Confirm Password");
 
-        gridPane.add(new Label("Password:"), 0, 0);
+        Label passwordLabel = new Label("Password:");
+        Label confirmPasswordLabel = new Label("Confirm Password:");
+
+        gridPane.add(passwordLabel, 0, 0);
         gridPane.add(password, 1, 0);
-        gridPane.add(new Label("Confirm Password:"), 0, 1);
+        gridPane.add(confirmPasswordLabel, 0, 1);
         gridPane.add(confirmPassword, 1, 1);
 
         // add gridPane to the dialogPane
@@ -49,12 +56,11 @@ public class SignupDialog extends Dialog<Pair<char[],char[]>> {
             confirmPassword.setDisable(newValue.trim().isEmpty());
             // disable signup button if password empty
             signupButton.setDisable(newValue.trim().isEmpty());
-        }));
-
-        // listen for changes in confirm password
-        confirmPassword.textProperty().addListener(((observableValue, oldValue, newValue) -> {
-            // enable signup button if confirm password field is not empty, disable if empty
-            signupButton.setDisable(newValue.trim().isEmpty());
+            // listen for changes in confirm password
+            confirmPassword.textProperty().addListener(((obV, oV, nV) -> {
+                // enable signup button if confirm password field is not empty, disable if empty
+                signupButton.setDisable(nV.trim().isEmpty());
+            }));
         }));
 
         // convert the result to Pair<String, String>

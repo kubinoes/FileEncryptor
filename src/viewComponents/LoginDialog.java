@@ -1,3 +1,7 @@
+/* Login dialog with password input field
+ *  Inspired and adapted from: https://code.makery.ch/blog/javafx-dialogs-official/
+ * */
+
 package viewComponents;
 
 import javafx.application.Platform;
