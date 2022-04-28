@@ -32,10 +32,13 @@ public class SignupButton extends Button {
                     char[] confirmPsw = password.getValue();
                     if (PasswordUtil.validatePassword(psw)) {
                         if (Arrays.equals(psw, confirmPsw)){
+                            // save password to memory
                             PasswordUtil.setPassword(psw);
+                            // create keystore with a key and save it on harddisk
                             KeyStore keyStore = KeyStoreManager.createKeyStore();
                             KeyStoreManager.generateAndAddKey(keyStore);
                             KeyStoreManager.storeKeyStore(keyStore);
+                            // show cipher window to allow encryption and decryption
                             stage.setScene(new Scene(new CipherBox(stage), 300, 200));
                         } else {
                             new ErrorDialog("Passwords do not match, try again.").showAndWait();

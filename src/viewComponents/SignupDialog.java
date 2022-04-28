@@ -20,12 +20,13 @@ public class SignupDialog extends Dialog<Pair<char[],char[]>> {
         setTitle("Create your secure key.");
         setHeaderText("Enter your new password and confirm it to create a secure key for your encryption.");
 
-        // passwords labels and fields
+        // create grid
         GridPane gridPane = new GridPane();
         gridPane.setHgap(10);
         gridPane.setVgap(10);
         gridPane.setPadding(new Insets(20, 150, 10, 10));
 
+        // password fields and labels
         PasswordField password = new PasswordField();
         password.setPromptText("Password");
         PasswordField confirmPassword = new PasswordField();
@@ -35,6 +36,7 @@ public class SignupDialog extends Dialog<Pair<char[],char[]>> {
         Label passwordLabel = new Label("Password:");
         Label confirmPasswordLabel = new Label("Confirm Password:");
 
+        // add labels and fields to the grid
         gridPane.add(passwordLabel, 0, 0);
         gridPane.add(password, 1, 0);
         gridPane.add(confirmPasswordLabel, 0, 1);

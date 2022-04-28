@@ -17,10 +17,11 @@ public class FileUtil {
         }
     }
 
-    public static byte[] readAllBytes(String plaintextFileName) {
+    public static byte[] readAllBytes(String filePathName) {
+        // read all bytes from a file
         byte[] bytesRead = {};
         try {
-            bytesRead = Files.readAllBytes(Paths.get(plaintextFileName));
+            bytesRead = Files.readAllBytes(Paths.get(filePathName));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -28,9 +29,11 @@ public class FileUtil {
     }
 
     public static void write(String filePathName, byte[] output) {
+        // write out bytes to a file
         String outFile;
         String[] parts = filePathName.split("\\.");
         // if the file doesn't end with .aes, append it because the file to be written is encrypted
+        // else remove the .aes because we are decrypting
         if (!parts[parts.length - 1].equals("aes")){
             outFile = filePathName + ".aes";
         } else {

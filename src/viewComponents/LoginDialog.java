@@ -20,16 +20,19 @@ public class LoginDialog extends Dialog<char[]> {
         setTitle("Login");
         setHeaderText("Type in your password to start encrypting or decrypting your files.");
 
-        // label and field
+        // create the grid
         GridPane gridPane = new GridPane();
         gridPane.setHgap(10);
         gridPane.setVgap(10);
         gridPane.setPadding(new Insets(20, 150, 10, 10));
 
+        // label and field
         PasswordField password = new PasswordField();
         password.setPromptText("Password");
+        Label passwordLabel = new Label("Password:");
 
-        gridPane.add(new Label("Password:"), 0, 0);
+        // add field and label to the grid
+        gridPane.add(passwordLabel, 0, 0);
         gridPane.add(password, 1, 0);
 
         // add gridPane to dialogPane

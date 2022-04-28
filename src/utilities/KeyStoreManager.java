@@ -37,6 +37,7 @@ public class KeyStoreManager {
         return null;
     }
 
+    // get secure key
     public static SecretKeySpec getKey() {
         SecretKeySpec key = null;
         try {
@@ -48,6 +49,7 @@ public class KeyStoreManager {
         return key;
     }
 
+    // store the new keystore file on harddisk
     public static void storeKeyStore(KeyStore keyStore) {
         try {
             FileOutputStream fOut = new FileOutputStream(storeFilePath);
@@ -58,6 +60,7 @@ public class KeyStoreManager {
         }
     }
 
+    // create an instance of new empty keystore
     public static KeyStore createKeyStore() {
         try {
             KeyStore keyStore = KeyStore.getInstance("BKS", "BC");
@@ -69,6 +72,7 @@ public class KeyStoreManager {
         return null;
     }
 
+    // add a random key to the new keystore
     public static void generateAndAddKey(KeyStore keyStore) {
         try {
             // generate random bytes

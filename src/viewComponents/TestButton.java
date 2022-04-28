@@ -36,7 +36,7 @@ public class TestButton extends Button {
                 createEmptyFile();
                 printSuccess("SUCCESS: Empty file created.");
             } catch (Exception e) {
-                printFail(e.toString());
+                printFailure(e.toString());
                 return;
             }
             // Step 2 write a string to the original file
@@ -45,7 +45,7 @@ public class TestButton extends Button {
                 modifyFile();
                 printSuccess("SUCCESS: File successfully edited.");
             } catch (Exception e) {
-                printFail(e.toString());
+                printFailure(e.toString());
                 return;
             }
             // Step 3 set password to the memory
@@ -58,7 +58,7 @@ public class TestButton extends Button {
                 deleteKeyStore();
                 printSuccess("SUCCESS: Keystore either doesn't exist or was successfully deleted.");
             } catch (Exception e) {
-                printFail(e.toString());
+                printFailure(e.toString());
                 return;
             }
             // Step 5 create keystore with a key
@@ -67,7 +67,7 @@ public class TestButton extends Button {
                 createKeyStoreWithKey();
                 printSuccess("SUCCESS: KeyStore and a key successfully created.");
             } catch (Exception e) {
-                printFail(e.toString());
+                printFailure(e.toString());
                 return;
             }
             // Step 6 encrypt original file
@@ -77,7 +77,7 @@ public class TestButton extends Button {
                 printSuccess("SUCCESS: File encrypted");
             } catch (Exception e) {
                 e.printStackTrace();
-                printFail("FAIL: Encryption failed!");
+                printFailure("FAIL: Encryption failed!");
                 return;
             }
             // Step 7 rename the original file to test file
@@ -85,7 +85,7 @@ public class TestButton extends Button {
             if (originalFile.renameTo(renamedOriginalFile)) {
                 printSuccess("SUCCESS: Original file renamed.");
             } else {
-                printFail("FAIL: Original file not renamed!");
+                printFailure("FAIL: Original file not renamed!");
                 return;
             }
             // Step 8 decrypt
@@ -95,7 +95,7 @@ public class TestButton extends Button {
                 printSuccess("SUCCESS: File decrypted");
             } catch (Exception e) {
                 e.printStackTrace();
-                printFail("FAIL: Decryption failed!");
+                printFailure("FAIL: Decryption failed!");
                 return;
             }
             // Step 9 compare cipher text to original
@@ -104,7 +104,7 @@ public class TestButton extends Button {
                 compareEncryptedBytes();
                 printSuccess("SUCCESS: Encrypted file doesn't match the original.");
             } catch (Exception e) {
-                printFail(e.toString());
+                printFailure(e.toString());
                 return;
             }
             // Step 10 compare original with decrypted file
@@ -113,28 +113,28 @@ public class TestButton extends Button {
                 compareDecryptedBytes();
                 printSuccess("SUCCESS: Decrypted file is the same as original file.");
             } catch (Exception e) {
-                printFail(e.toString());
+                printFailure(e.toString());
             }
             // Step 11 remove original file
             System.out.println("Deleting original file.");
             if (renamedOriginalFile.delete()) {
                 printSuccess("SUCCESS: Original file successfully deleted.");
             } else {
-                printFail("FAIL: Original file wasn't deleted!");
+                printFailure("FAIL: Original file wasn't deleted!");
             }
             // Step 12 remove decrypted file
             System.out.println("Deleting decrypted file.");
             if (decryptedFile.delete()) {
                 printSuccess("SUCCESS: Decrypted file successfully deleted.");
             } else {
-                printFail("FAIL: Decrypted file wasn't deleted!");
+                printFailure("FAIL: Decrypted file wasn't deleted!");
             }
             // Step 12 remove encrypted file
             System.out.println("Deleting encrypted file.");
             if (encryptedFile.delete()) {
                 printSuccess("SUCCESS: Decrypted file successfully deleted.");
             } else {
-                printFail("FAIL: Decrypted file wasn't deleted!");
+                printFailure("FAIL: Decrypted file wasn't deleted!");
             }
             // Step 13 remove keystore
             try {
@@ -142,7 +142,7 @@ public class TestButton extends Button {
                 deleteKeyStore();
                 printSuccess("SUCCESS: Keystore was successfully deleted.");
             } catch (Exception e) {
-                printFail(e.toString());
+                printFailure(e.toString());
                 return;
             }
             // Step 14 remove password from memory
@@ -154,11 +154,13 @@ public class TestButton extends Button {
         });
     }
 
+    // print out green success message
     private void printSuccess(String message) {
         String ANSI_GREEN = "\u001B[32m";
         System.out.println(ANSI_GREEN + message + "\u001B[0m");
     }
-    private void printFail(String message) {
+    // print out red failure message
+    private void printFailure(String message) {
         String ANSI_RED = "\u001B[31m";
         System.out.println(ANSI_RED + message + "\u001B[0m");
     }
